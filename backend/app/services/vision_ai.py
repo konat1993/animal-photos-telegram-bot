@@ -2,8 +2,8 @@ import base64
 import json
 import logging
 from openai import AsyncOpenAI
-from backend.app.core.config import settings
-from backend.app.models.schemas import VisionResult
+from ..core.config import settings
+from ..models.schemas import VisionResult
 
 logger = logging.getLogger(__name__)
 
