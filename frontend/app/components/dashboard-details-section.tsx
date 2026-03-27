@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { DashboardLoadResult } from "@/lib/dashboard-data";
 import { ReportsMap } from "./map-wrapper";
+import { ReportPhotoModal } from "./report-photo-modal";
 import { ReportsTable } from "./reports-table";
 import { SpeciesPieChart } from "./species-pie-chart";
 
@@ -23,7 +24,7 @@ async function SpeciesChartCell({
   const r = await promise;
   if (!r.ok) {
     return (
-      <div className="flex h-[280px] items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
         Unable to load chart.
       </div>
     );
@@ -44,7 +45,29 @@ async function SightingMapCell({
       </div>
     );
   }
-  return <ReportsMap points={r.data.mapPoints} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="h-[400px] w-full animate-pulse rounded-b-xl bg-muted" />
+      }
+    >
+      <ReportsMap points={r.data.mapPoints} />
+    </Suspense>
+  );
+}
+
+async function ReportPhotoModalCell({
+  promise,
+}: {
+  promise: Promise<DashboardLoadResult>;
+}) {
+  const r = await promise;
+  if (!r.ok) return null;
+  return (
+    <Suspense fallback={null}>
+      <ReportPhotoModal reports={r.data.reports} />
+    </Suspense>
+  );
 }
 
 async function ReportsTableCell({
@@ -111,6 +134,10 @@ export function DashboardDetailsSection({
         <DashboardLoadErrorAlert promise={promise} />
       </Suspense>
 
+      <Suspense fallback={null}>
+        <ReportPhotoModalCell promise={promise} />
+      </Suspense>
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -120,14 +147,14 @@ export function DashboardDetailsSection({
           </CardHeader>
           <CardContent>
             <Suspense
-              fallback={<Skeleton className="h-[280px] w-full rounded-lg" />}
+              fallback={<Skeleton className="h-[300px] w-full rounded-lg" />}
             >
               <SpeciesChartCell promise={promise} />
             </Suspense>
           </CardContent>
         </Card>
 
-        <Card className="gap-0 overflow-hidden p-0">
+        <Card id="sighting-map" className="gap-0 overflow-hidden p-0">
           <CardHeader className="border-border border-b px-4 pt-4 pb-3">
             <CardTitle className="text-lg font-medium">Sighting Map</CardTitle>
           </CardHeader>

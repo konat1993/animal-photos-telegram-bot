@@ -1,3 +1,4 @@
+import { getDemoDashboardData, isDemoMode } from "@/lib/demo-data";
 import { type AnimalReport, supabase } from "@/lib/supabase";
 
 export interface DashboardFilters {
@@ -11,6 +12,7 @@ export type DashboardData = {
 	speciesCounts: { species: string; count: number }[];
 	allSpecies: string[];
 	mapPoints: {
+		id: string;
 		lat: number;
 		lng: number;
 		species: string;
@@ -27,6 +29,10 @@ export type DashboardLoadResult =
 	| { ok: false; message: string };
 
 async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
+	if (isDemoMode()) {
+		return getDemoDashboardData(filters);
+	}
+
 	let query = supabase
 		.from("animal_reports")
 		.select("*")
@@ -73,6 +79,7 @@ async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
 	const allSpecies = speciesCounts.map((s) => s.species);
 
 	const mapPoints = (reports ?? []).map((r: AnimalReport) => ({
+		id: r.id,
 		lat: r.latitude,
 		lng: r.longitude,
 		species: r.identified_species,

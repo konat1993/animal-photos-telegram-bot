@@ -131,3 +131,63 @@
     @apply font-sans;
   }
 }
+
+/* Recharts pie: click focuses the sector → global * outline draws a box on SVG bounds.
+   Hide for pointer focus; keyboard :focus-visible still uses the global ring. */
+.species-pie-chart-root *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Leaflet marker popups — match shadcn popover/card, less “default map” flat look */
+.report-map-root .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid color-mix(in oklch, var(--border) 85%, transparent);
+  box-shadow:
+    0 25px 50px -12px rgb(0 0 0 / 0.2),
+    0 12px 24px -10px rgb(0 0 0 / 0.12),
+    0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+.dark .report-map-root .leaflet-popup-content-wrapper {
+  box-shadow:
+    0 25px 50px -12px rgb(0 0 0 / 0.55),
+    0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.report-map-root .leaflet-popup-content {
+  margin: 0;
+  min-width: 220px;
+  max-width: 288px;
+  line-height: 1.45;
+}
+
+.report-map-root .leaflet-popup-tip {
+  background: var(--popover);
+  box-shadow: none;
+}
+
+.report-map-root a.leaflet-popup-close-button {
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.75rem;
+  text-align: center;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-md);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.report-map-root a.leaflet-popup-close-button:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
