@@ -1,3 +1,5 @@
+"use client";
+
 import { Send } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram-bot";
@@ -13,13 +15,18 @@ export function TelegramBotCta() {
 			target="_blank"
 			rel="noopener noreferrer"
 			className={cn(
-				buttonVariants({ variant: "outline", size: "sm" }),
+				buttonVariants({
+					variant: "outline",
+					size: "sm",
+				}),
 				"touch-manipulation gap-2 no-underline",
 			)}
 		>
 			<Send className="size-4 shrink-0" aria-hidden />
 			<span className="sm:hidden">Telegram</span>
-			<span className="hidden sm:inline">Report in Telegram</span>
+			<span className="hidden sm:inline">
+				Report in Telegram
+			</span>
 		</a>
 	);
 }
