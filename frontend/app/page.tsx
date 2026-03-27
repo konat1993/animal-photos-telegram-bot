@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { loadDashboard } from "@/lib/dashboard-data";
 import { DashboardDetailsSection } from "./components/dashboard-details-section";
 import { DashboardKpiRow } from "./components/dashboard-kpi-row";
+import { TelegramBotCta } from "./components/telegram-bot-cta";
 import { ThemeToggle } from "./components/theme-toggle";
 
 interface PageProps {
@@ -27,7 +28,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
               Animal Reports
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <TelegramBotCta />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

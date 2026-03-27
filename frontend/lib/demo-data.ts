@@ -1,3 +1,7 @@
+import {
+	speciesDisplayLabel,
+	speciesNormalizeKey,
+} from "@/lib/species-color";
 import type { AnimalReport } from "@/lib/supabase";
 
 type DemoFilters = {
@@ -81,8 +85,9 @@ function applyFilters(
 ): AnimalReport[] {
 	let list = [...reports];
 	if (filters.species) {
+		const want = speciesNormalizeKey(filters.species);
 		list = list.filter(
-			(r) => r.identified_species === filters.species,
+			(r) => speciesNormalizeKey(r.identified_species) === want,
 		);
 	}
 	if (filters.date_from) {
@@ -109,20 +114,30 @@ export function getDemoDashboardData(filters: DemoFilters) {
 
 	const speciesMap: Record<string, number> = {};
 	for (const r of all) {
-		speciesMap[r.identified_species] =
-			(speciesMap[r.identified_species] || 0) + 1;
+		const key = speciesNormalizeKey(r.identified_species);
+		speciesMap[key] = (speciesMap[key] || 0) + 1;
 	}
 	const speciesCounts = Object.entries(speciesMap)
-		.map(([species, count]) => ({ species, count }))
+		.map(([key, count]) => ({
+			species: speciesDisplayLabel(key),
+			count,
+		}))
 		.sort((a, b) => b.count - a.count);
 
 	const allSpecies = speciesCounts.map((s) => s.species);
+
+	const withDisplaySpecies = (r: AnimalReport): AnimalReport => ({
+		...r,
+		identified_species: speciesDisplayLabel(
+			speciesNormalizeKey(r.identified_species),
+		),
+	});
 
 	const mapPoints = reports.map((r) => ({
 		id: r.id,
 		lat: r.latitude,
 		lng: r.longitude,
-		species: r.identified_species,
+		species: speciesDisplayLabel(speciesNormalizeKey(r.identified_species)),
 		created_at: r.created_at,
 		photo_url: r.photo_url,
 	}));
@@ -139,7 +154,7 @@ export function getDemoDashboardData(filters: DemoFilters) {
 			: null;
 
 	return {
-		reports,
+		reports: reports.map(withDisplaySpecies),
 		speciesCounts,
 		allSpecies,
 		mapPoints,
