@@ -22,4 +22,5 @@ class Settings(BaseSettings):
         return key
 
 
-settings = Settings()
+# Env vars supply required fields at runtime (BaseSettings); Pyright cannot see that.
+settings = Settings()  # pyright: ignore[reportCallIssue]

@@ -17,12 +17,21 @@ class Location(BaseModel):
     longitude: float
 
 
+class Venue(BaseModel):
+    """Telegram POI — coordinates are in venue.location."""
+
+    location: Location
+
+
 class TelegramMessage(BaseModel):
     message_id: int
     chat: dict
     from_: Optional[dict] = None
     photo: Optional[list[PhotoSize]] = None
     location: Optional[Location] = None
+    venue: Optional[Venue] = None
+    text: Optional[str] = None
+    caption: Optional[str] = None
 
     model_config = {"populate_by_name": True}
 
@@ -32,6 +41,15 @@ class TelegramMessage(BaseModel):
             obj = dict(obj)
             obj["from_"] = obj.pop("from")
         return super().model_validate(obj, **kwargs)
+
+
+def effective_message_location(message: "TelegramMessage") -> Optional[Location]:
+    """Pinned location or venue (place) from the map — both carry coordinates."""
+    if message.location is not None:
+        return message.location
+    if message.venue is not None:
+        return message.venue.location
+    return None
 
 
 class TelegramUpdate(BaseModel):

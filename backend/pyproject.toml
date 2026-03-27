@@ -13,3 +13,11 @@ dependencies = [
     "supabase>=2.28.3",
     "uvicorn[standard]>=0.42.0",
 ]
+
+[tool.pyright]
+include = ["."]
+exclude = [".venv"]
+venvPath = "."
+venv = ".venv"
+extraPaths = [".."]
+pythonVersion = "3.12"

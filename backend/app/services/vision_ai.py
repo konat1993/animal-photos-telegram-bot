@@ -23,7 +23,19 @@ def get_client() -> AsyncOpenAI:
     return _client
 
 
-async def analyze_image(image_bytes: bytes) -> VisionResult:
+def mime_type_for_telegram_path(file_path: str) -> str:
+    """Telegram file_path suffix reflects real bytes; wrong MIME breaks some Vision calls."""
+    lower = file_path.lower()
+    if lower.endswith(".png"):
+        return "image/png"
+    if lower.endswith(".webp"):
+        return "image/webp"
+    if lower.endswith(".gif"):
+        return "image/gif"
+    return "image/jpeg"
+
+
+async def analyze_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> VisionResult:
     """Send image to OpenAI Vision and return parsed VisionResult."""
     b64 = base64.b64encode(image_bytes).decode("utf-8")
     client = get_client()
@@ -40,7 +52,7 @@ async def analyze_image(image_bytes: bytes) -> VisionResult:
                 "content": [
                     {
                         "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{b64}", "detail": "low"},
+                        "image_url": {"url": f"data:{mime_type};base64,{b64}", "detail": "low"},
                     },
                 ],
             },

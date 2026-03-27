@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.analysis.extraPaths": ["${workspaceFolder}"],
+  "python.analysis.exclude": ["**/.venv/**", "**/site-packages/**"],
+  "basedpyright.analysis.extraPaths": ["${workspaceFolder}"],
+  "basedpyright.analysis.exclude": ["**/.venv/**", "**/site-packages/**"]
+}
