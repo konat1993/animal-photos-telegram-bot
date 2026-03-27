@@ -36,7 +36,8 @@ async def upload_photo(image_bytes: bytes, filename: str | None = None) -> tuple
         content_type = "image/jpeg"
 
     try:
-        opts: Any = {"content-type": content_type, "upsert": True}
+        # storage3 passes these as HTTP headers; values must be str (bool breaks httpx).
+        opts: Any = {"content-type": content_type, "upsert": "true"}
         client.storage.from_(BUCKET).upload(path, image_bytes, file_options=opts)
     except Exception:
         logger.exception("Supabase storage upload failed bucket=%s path=%s", BUCKET, path)
