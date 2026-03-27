@@ -8,9 +8,19 @@ from backend.app.models.schemas import VisionResult
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = (
-    "You are a wildlife identification AI. Analyze the image and respond ONLY with valid JSON "
-    "in this exact format, no additional text:\n"
-    '{"identified_species": "<species name or Unknown>", "confidence": <0.0-1.0 or null>, "safety_note": "<one sentence safety note>"}'
+    "You are a wildlife field-identification AI. The user may send a live animal, a carcass, OR "
+    "field sign: footprints/tracks in mud or snow, scat, feathers, fur, burrows, rubbings, etc.\n"
+    "For TRACKS and FOOTPRINTS specifically: infer species from anatomy of the print — number and "
+    "shape of toes, claws, hoof symmetry, dewclaw / interdigital marks behind cloven hooves, "
+    "pad shape, gait patterns if multiple prints are visible. Name the most likely wild species "
+    "(e.g. wild boar, roe deer, red deer, wolf, fox, badger) when evidence fits; use a concise "
+    "common English name. Reserve \"Unknown\" only when the image has almost no usable track detail "
+    "(blur, no print visible). If scale is unclear or several species overlap in appearance, still "
+    "give your best hypothesis with LOWER confidence (e.g. 0.35–0.55) and say uncertainty briefly "
+    "in safety_note — do not default to Unknown just to be cautious.\n"
+    "Respond ONLY with valid JSON, no markdown or extra text:\n"
+    '{"identified_species": "<species name or Unknown>", "confidence": <0.0-1.0 or null>, '
+    '"safety_note": "<one sentence: practical caution + uncertainty if any>"}'
 )
 
 _client: AsyncOpenAI | None = None
@@ -52,7 +62,8 @@ async def analyze_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> Vi
                 "content": [
                     {
                         "type": "image_url",
-                        "image_url": {"url": f"data:{mime_type};base64,{b64}", "detail": "low"},
+                        # "high" preserves small track features (dewclaws, toe edges) better than "low".
+                        "image_url": {"url": f"data:{mime_type};base64,{b64}", "detail": "high"},
                     },
                 ],
             },
@@ -72,11 +83,14 @@ async def analyze_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> Vi
         if match:
             parsed = json.loads(match.group())
         else:
-            logger.error("Could not parse OpenAI response as JSON: %s", raw_text)
-            parsed = {"identified_species": "Unknown", "confidence": None, "safety_note": "Could not analyze image."}
+            logger.error(
+                "Could not parse OpenAI response as JSON: %s", raw_text)
+            parsed = {"identified_species": "Unknown", "confidence": None,
+                      "safety_note": "Could not analyze image."}
 
     return VisionResult(
         identified_species=parsed.get("identified_species", "Unknown"),
         confidence=parsed.get("confidence"),
-        safety_note=parsed.get("safety_note", "No safety information available."),
+        safety_note=parsed.get(
+            "safety_note", "No safety information available."),
     )
