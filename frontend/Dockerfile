@@ -1,6 +1,8 @@
 # Build with context ./frontend (see docker-compose.yml)
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
+# Align with package.json packageManager so `npm ci` matches local lockfile (npm 10 vs 11 drift).
+RUN npm install -g npm@11.6.2
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
