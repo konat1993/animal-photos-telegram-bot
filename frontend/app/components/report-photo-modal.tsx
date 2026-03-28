@@ -84,8 +84,8 @@ export function ReportPhotoModal({ reports }: Props) {
               </DialogTitle>
               <DialogDescription className="space-y-2 text-left">
                 <span className="block">
-                  {formatReportDateTime(resolved.created_at)} — no photo for this
-                  report.
+                  {formatReportDateTime(resolved.created_at)} — no photo for
+                  this report.
                 </span>
                 {resolved.species_fact?.trim() ? (
                   <span className="border-border/60 block border-l-2 pl-2 text-sm leading-snug text-muted-foreground">
