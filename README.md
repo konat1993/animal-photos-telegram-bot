@@ -52,6 +52,57 @@ flowchart TB
 | [`docker-compose.yml`](docker-compose.yml) | Caddy + frontend + backend ([`.env.docker.example`](.env.docker.example)) |
 | [`docs/deploy-droplet.md`](docs/deploy-droplet.md) | Production deployment on a VPS |
 
+### Monorepo file tree
+
+High-level layout (generated from the repo; omitting `node_modules`, `.next`, `.venv`, and other generated paths):
+
+```text
+.
+├── .github/workflows/ci.yml       # pytest, Biome, Vitest, build, Playwright
+├── docker-compose.yml             # Caddy + frontend + backend
+├── .env.docker.example            # Template for Docker / VPS env
+├── README.md
+├── backend/
+│   ├── app/
+│   │   ├── main.py                # FastAPI app factory
+│   │   ├── api/
+│   │   │   └── telegram_webhook.py
+│   │   ├── core/
+│   │   │   └── config.py          # Pydantic settings / env
+│   │   ├── models/
+│   │   │   └── schemas.py       # Telegram + domain models
+│   │   └── services/
+│   │       ├── telegram_client.py
+│   │       ├── supabase_client.py
+│   │       ├── vision_ai.py
+│   │       ├── location_from_text.py
+│   │       └── reverse_geocode.py
+│   ├── tests/                     # pytest (schemas, geocode, webhook, …)
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   └── .env.example
+├── frontend/
+│   ├── app/                       # App Router: page, layout, route components
+│   ├── components/ui/             # Shared UI primitives (shadcn-style)
+│   ├── lib/                       # Supabase client, dashboard data, demo mode, utils
+│   ├── e2e/                       # Playwright specs
+│   ├── public/
+│   ├── Dockerfile
+│   ├── next.config.ts
+│   ├── playwright.config.ts
+│   ├── vitest.config.ts
+│   └── .env.example
+├── supabase/migrations/
+│   ├── 001_init.sql
+│   ├── 002_location_labels.sql
+│   └── 003_species_fact.sql
+├── deploy/
+│   └── Caddyfile
+└── docs/
+    ├── deploy-droplet.md
+    └── …                          # Design notes, SSH, etc.
+```
+
 ---
 
 ## Tech stack
