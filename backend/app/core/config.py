@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     supabase_service_role_key: str | None = None
     openai_api_key: str
     openai_model: str = "gpt-4o"
+    public_dashboard_url: str
 
     @property
     def supabase_server_key(self) -> str:

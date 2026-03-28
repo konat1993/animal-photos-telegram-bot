@@ -34,6 +34,7 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      PUBLIC_DASHBOARD_URL: ${PUBLIC_DASHBOARD_URL}
     restart: unless-stopped
 
 volumes:

@@ -24,6 +24,7 @@ Fill in variables (names must be **UPPERCASE**, as in `.env.example`):
 | `SUPABASE_SECRET_KEY` | Service role / secret key for server-side use; legacy alternative: `SUPABASE_SERVICE_ROLE_KEY` |
 | `OPENAI_API_KEY` | OpenAI API key |
 | `OPENAI_MODEL` | e.g. `gpt-4o-mini` or `gpt-4o` |
+| `PUBLIC_DASHBOARD_URL` | Public URL of the stats / map site (shown in bot replies), e.g. `https://animal-photos-telegram-bot.cc` |
 
 ## Dependencies
 

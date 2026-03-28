@@ -16,7 +16,8 @@ _client: Client | None = None
 def get_client() -> Client:
     global _client
     if _client is None:
-        _client = create_client(settings.supabase_url, settings.supabase_server_key)
+        _client = create_client(settings.supabase_url,
+                                settings.supabase_server_key)
     return _client
 
 
@@ -38,13 +39,16 @@ async def upload_photo(image_bytes: bytes, filename: str | None = None) -> tuple
     try:
         # storage3 passes these as HTTP headers; values must be str (bool breaks httpx).
         opts: Any = {"content-type": content_type, "upsert": "true"}
-        client.storage.from_(BUCKET).upload(path, image_bytes, file_options=opts)
+        client.storage.from_(BUCKET).upload(
+            path, image_bytes, file_options=opts)
     except Exception:
-        logger.exception("Supabase storage upload failed bucket=%s path=%s", BUCKET, path)
+        logger.exception(
+            "Supabase storage upload failed bucket=%s path=%s", BUCKET, path)
         raise
 
     public_url_resp = client.storage.from_(BUCKET).get_public_url(path)
-    public_url: str = public_url_resp if isinstance(public_url_resp, str) else public_url_resp["publicUrl"]
+    public_url: str = public_url_resp if isinstance(
+        public_url_resp, str) else public_url_resp["publicUrl"]
     logger.info("Uploaded photo to %s, public URL: %s", path, public_url)
     return path, public_url
 

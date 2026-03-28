@@ -7,6 +7,7 @@ from ..models.schemas import (
     TelegramUpdate,
     effective_message_location,
 )
+from ..core.config import settings
 from ..services import telegram_client, supabase_client, vision_ai
 from ..services.location_from_text import resolve_location_text
 
@@ -29,6 +30,16 @@ WELCOME = (
     "👋 Welcome! Send me a photo of an animal you spotted and I'll identify it for you.\n"
     "Then send where you saw it — same options as below:\n\n" + LOCATION_HINT
 )
+
+
+def _report_success_footer() -> str:
+    """Short link-out after a saved report (Polish copy for end users)."""
+    return (
+        "\n\n────────\n"
+        "🌐 Zgłoszenia od innych obserwatorów, mapa i zbiorcze statystyki "
+        "znajdziesz na stronie projektu:\n"
+        f"{settings.public_dashboard_url}"
+    )
 
 
 async def _complete_report(
@@ -84,6 +95,7 @@ async def _complete_report(
             f"✅ Report saved!\n\n"
             f"🐾 Species: {vision_result.identified_species}{confidence_str}\n"
             f"⚠️ {vision_result.safety_note}"
+            f"{_report_success_footer()}"
         )
         step = "telegram_reply"
         await telegram_client.send_message(chat_id, reply)
