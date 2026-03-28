@@ -11,10 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { formatReportLocation } from "@/lib/location-display";
 import { PHOTO_REPORT_PARAM } from "@/lib/report-photo-query";
 import { colorForSpecies } from "@/lib/species-color";
 import type { AnimalReport } from "@/lib/supabase";
-import { formatReportLocation } from "@/lib/location-display";
 import { cn, formatReportDateTime } from "@/lib/utils";
 
 interface Props {

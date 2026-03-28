@@ -10,7 +10,7 @@ function getSupabaseClient(): SupabaseClient {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!url || !key) {
       throw new Error(
-        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or legacy NEXT_PUBLIC_SUPABASE_ANON_KEY) must be configured"
+        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or legacy NEXT_PUBLIC_SUPABASE_ANON_KEY) must be configured",
       );
     }
     _client = createClient(url, key);
