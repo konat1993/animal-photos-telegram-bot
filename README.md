@@ -6,6 +6,10 @@ End-to-end flow: observers send a **photo** and **location** via Telegram; a **F
 
 **Live dashboard (statistics):** [animal-photos-telegram-bot.cc](https://animal-photos-telegram-bot.cc)
 
+## Medium article
+
+https://medium.com/@konatek1993/building-a-wildlife-sightings-ai-pipeline-from-a-telegram-photo-to-a-map-dashboard-53bd8eab06f0
+
 ---
 
 ## Architecture
