@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     openai_api_key: str
     openai_model: str = "gpt-4o"
     public_dashboard_url: str
+    geocoding_user_agent: str = (
+        "animal-photos-telegram-bot/1.0 "
+        "(https://animal-photos-telegram-bot.cc; vision location context)"
+    )
 
     @property
     def supabase_server_key(self) -> str:
