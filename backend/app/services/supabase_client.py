@@ -57,6 +57,13 @@ async def insert_report(report: AnimalReportCreate) -> dict[str, Any]:
     """Insert an animal report row into animal_reports. Returns the inserted row."""
     client = get_client()
     data = report.model_dump(mode="json")
+    fact_preview = (data.get("species_fact") or "")[:120]
+    logger.info(
+        "Insert animal_reports row keys=%s species_fact_len=%s preview=%r",
+        sorted(data.keys()),
+        len(fact_preview),
+        fact_preview,
+    )
     try:
         result = client.table("animal_reports").insert(data).execute()
     except Exception:

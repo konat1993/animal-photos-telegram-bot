@@ -4,6 +4,8 @@
 
 End-to-end flow: observers send a **photo** and **location** via Telegram; a **FastAPI** backend downloads the image, runs **OpenAI Vision** for species identification, reverse-geocodes coordinates for context, and persists reports in **Supabase** (Postgres + Storage). A **Next.js** dashboard shows aggregate stats, a map, filters, and species insights.
 
+**Live dashboard (statistics):** [animal-photos-telegram-bot.cc](https://animal-photos-telegram-bot.cc)
+
 ---
 
 ## Architecture
@@ -125,6 +127,19 @@ High-level layout (generated from the repo; omitting `node_modules`, `.next`, `.
 - **OpenAI** API key (Vision + chat for location parsing fallback)
 
 For UI-only local work you can enable **demo mode** (no Supabase or backend required).
+
+### Supabase database migrations
+
+Apply SQL files from [`supabase/migrations/`](supabase/migrations/) **in order** in the Supabase SQL Editor (or CLI) for your project. New features depend on matching columns — for example [`003_species_fact.sql`](supabase/migrations/003_species_fact.sql) adds `species_fact` to `animal_reports`. If that migration was never run, inserts from the bot cannot persist that field (and `SELECT *` from the dashboard will not return it).
+
+Check that the column exists:
+
+```sql
+SELECT column_name FROM information_schema.columns
+WHERE table_schema = 'public' AND table_name = 'animal_reports' AND column_name = 'species_fact';
+```
+
+If this returns no rows, run the contents of `003_species_fact.sql`, then verify new reports.
 
 ---
 

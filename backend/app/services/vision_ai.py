@@ -112,13 +112,17 @@ async def analyze_image(
                 "species_fact": "",
             }
 
-    fact_raw = parsed.get("species_fact") or ""
-    species_fact = fact_raw.strip() if isinstance(fact_raw, str) else ""
+    # Models sometimes emit camelCase despite the prompt; accept both.
+    fact_raw = parsed.get("species_fact") or parsed.get("speciesFact")
+    species_fact = (str(fact_raw).strip() if fact_raw is not None else "")
 
     return VisionResult(
-        identified_species=parsed.get("identified_species", "Unknown"),
+        identified_species=parsed.get("identified_species")
+        or parsed.get("identifiedSpecies")
+        or "Unknown",
         confidence=parsed.get("confidence"),
-        safety_note=parsed.get(
-            "safety_note", "No safety information available."),
+        safety_note=parsed.get("safety_note")
+        or parsed.get("safetyNote")
+        or "No safety information available.",
         species_fact=species_fact,
     )
