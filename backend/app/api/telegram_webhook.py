@@ -10,7 +10,10 @@ from ..models.schemas import (
 from ..core.config import settings
 from ..services import telegram_client, supabase_client, vision_ai
 from ..services.location_from_text import resolve_location_text
-from ..services.reverse_geocode import build_location_context_for_vision
+from ..services.reverse_geocode import (
+    format_location_context_for_vision,
+    resolve_location_labels,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -69,7 +72,10 @@ async def _complete_report(
         photo_path, photo_url = await supabase_client.upload_photo(image_bytes, filename)
 
         step = "reverse_geocode"
-        location_context = await build_location_context_for_vision(latitude, longitude)
+        location_labels = await resolve_location_labels(latitude, longitude)
+        location_context = format_location_context_for_vision(
+            location_labels, latitude, longitude
+        )
         step = "openai_vision"
         vision_result = await vision_ai.analyze_image(
             image_bytes,
@@ -84,6 +90,9 @@ async def _complete_report(
             photo_url=photo_url,
             latitude=latitude,
             longitude=longitude,
+            location_continent=location_labels.continent,
+            location_country=location_labels.country,
+            location_region=location_labels.region,
             identified_species=vision_result.identified_species,
             confidence=vision_result.confidence,
             safety_note=vision_result.safety_note,

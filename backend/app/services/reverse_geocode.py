@@ -1,6 +1,7 @@
-"""Build a short English location summary for Vision prompts (continent, country, region)."""
+"""Reverse geocoding: continent, country, region for storage and Vision context."""
 
 import logging
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
@@ -11,6 +12,15 @@ logger = logging.getLogger(__name__)
 
 NOMINATIM_REVERSE = "https://nominatim.openstreetmap.org/reverse"
 RESTCOUNTRIES_ALPHA = "https://restcountries.com/v3.1/alpha"
+
+
+@dataclass
+class LocationLabels:
+    """Human-readable labels from coordinates (best effort; may be empty)."""
+
+    continent: str | None = None
+    country: str | None = None
+    region: str | None = None
 
 
 def _pick_region(address: dict[str, Any]) -> str | None:
@@ -42,13 +52,11 @@ async def _continent_for_country_code(country_code: str) -> str | None:
     return None
 
 
-async def build_location_context_for_vision(latitude: float, longitude: float) -> str:
+async def resolve_location_labels(latitude: float, longitude: float) -> LocationLabels:
     """
-    Human-readable geographic hints for the vision model.
-    Never raises; falls back to coordinates-only text if HTTP services fail.
+    Resolve continent, country, and region from coordinates.
+    Returns empty LocationLabels if reverse geocoding fails.
     """
-    coord_line = f"Coordinates (WGS84): {latitude:.5f}, {longitude:.5f}"
-
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
             r = await client.get(
@@ -64,11 +72,10 @@ async def build_location_context_for_vision(latitude: float, longitude: float) -
             r.raise_for_status()
             payload = r.json()
     except Exception:
-        logger.warning("Nominatim reverse failed for %s,%s", latitude, longitude, exc_info=True)
-        return (
-            "Geographic context (coordinates only; reverse geocoding failed):\n"
-            f"{coord_line}"
+        logger.warning(
+            "Nominatim reverse failed for %s,%s", latitude, longitude, exc_info=True
         )
+        return LocationLabels()
 
     address = payload.get("address") or {}
     if not isinstance(address, dict):
@@ -92,15 +99,34 @@ async def build_location_context_for_vision(latitude: float, longitude: float) -
     if country_code:
         continent = await _continent_for_country_code(country_code)
 
+    return LocationLabels(continent=continent, country=country, region=region)
+
+
+def format_location_context_for_vision(
+    labels: LocationLabels, latitude: float, longitude: float
+) -> str:
+    """English block for OpenAI Vision (same semantics as before refactor)."""
+    coord_line = f"Coordinates (WGS84): {latitude:.5f}, {longitude:.5f}"
+    if not labels.continent and not labels.country and not labels.region:
+        return (
+            "Geographic context (coordinates only; reverse geocoding failed):\n"
+            f"{coord_line}"
+        )
+
     lines = [
         "Geographic context for this observation (approximate, from coordinates):",
     ]
-    if continent:
-        lines.append(f"- Continent: {continent}")
-    if country:
-        lines.append(f"- Country: {country}")
-    if region:
-        lines.append(f"- Region / area: {region}")
+    if labels.continent:
+        lines.append(f"- Continent: {labels.continent}")
+    if labels.country:
+        lines.append(f"- Country: {labels.country}")
+    if labels.region:
+        lines.append(f"- Region / area: {labels.region}")
     lines.append(f"- {coord_line}")
-
     return "\n".join(lines)
+
+
+async def build_location_context_for_vision(latitude: float, longitude: float) -> str:
+    """Convenience: resolve labels and format for Vision (single call)."""
+    labels = await resolve_location_labels(latitude, longitude)
+    return format_location_context_for_vision(labels, latitude, longitude)

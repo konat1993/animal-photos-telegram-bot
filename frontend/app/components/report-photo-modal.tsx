@@ -14,6 +14,7 @@ import {
 import { PHOTO_REPORT_PARAM } from "@/lib/report-photo-query";
 import { colorForSpecies } from "@/lib/species-color";
 import type { AnimalReport } from "@/lib/supabase";
+import { formatReportLocation } from "@/lib/location-display";
 import { cn, formatReportDateTime } from "@/lib/utils";
 
 interface Props {
@@ -29,6 +30,11 @@ export function ReportPhotoModal({ reports }: Props) {
     () =>
       photoReportId ? reports.find((r) => r.id === photoReportId) : undefined,
     [reports, photoReportId],
+  );
+
+  const placeLabel = useMemo(
+    () => (resolved ? formatReportLocation(resolved) : null),
+    [resolved],
   );
 
   const open = Boolean(photoReportId);
@@ -96,8 +102,17 @@ export function ReportPhotoModal({ reports }: Props) {
                   />
                   {resolved.identified_species}
                 </DialogTitle>
-                <DialogDescription>
-                  {formatReportDateTime(resolved.created_at)}
+                <DialogDescription className="space-y-1.5 text-left text-sm text-muted-foreground">
+                  <span className="block">
+                    {formatReportDateTime(resolved.created_at)}
+                  </span>
+                  {placeLabel ? (
+                    <span className="block">{placeLabel}</span>
+                  ) : null}
+                  <span className="block font-mono text-xs">
+                    {resolved.latitude.toFixed(5)},{" "}
+                    {resolved.longitude.toFixed(5)}
+                  </span>
                 </DialogDescription>
               </DialogHeader>
               <div className="relative w-full overflow-hidden rounded-lg bg-muted">

@@ -2,6 +2,7 @@ import {
 	speciesDisplayLabel,
 	speciesNormalizeKey,
 } from "@/lib/species-color";
+import { formatReportLocation } from "@/lib/location-display";
 import type { AnimalReport } from "@/lib/supabase";
 
 type DemoFilters = {
@@ -19,6 +20,9 @@ const DEMO_REPORTS: AnimalReport[] = [
 		photo_url: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=400",
 		latitude: 52.2297,
 		longitude: 21.0122,
+		location_continent: "Europe",
+		location_country: "Poland",
+		location_region: "Masovian Voivodeship",
 		identified_species: "Red fox",
 		confidence: 0.91,
 		safety_note: "Keep distance; do not feed.",
@@ -32,6 +36,9 @@ const DEMO_REPORTS: AnimalReport[] = [
 		photo_url: "https://images.unsplash.com/photo-1577382539866-5ef07a099858?w=400",
 		latitude: 52.237,
 		longitude: 21.05,
+		location_continent: "Europe",
+		location_country: "Poland",
+		location_region: "Masovian Voivodeship",
 		identified_species: "Wild boar",
 		confidence: 0.88,
 		safety_note: "Avoid sudden movement near young.",
@@ -45,6 +52,9 @@ const DEMO_REPORTS: AnimalReport[] = [
 		photo_url: "https://images.unsplash.com/photo-1484406566174-9da000fda645?w=400",
 		latitude: 52.21,
 		longitude: 20.98,
+		location_continent: "Europe",
+		location_country: "Poland",
+		location_region: "Masovian Voivodeship",
 		identified_species: "Roe deer",
 		confidence: 0.85,
 		safety_note: "Common in forest edges at dusk.",
@@ -58,6 +68,9 @@ const DEMO_REPORTS: AnimalReport[] = [
 		photo_url: "https://images.unsplash.com/photo-1569449047196-cebeecbc6b6b?w=400",
 		latitude: 52.25,
 		longitude: 21.03,
+		location_continent: "Europe",
+		location_country: "Poland",
+		location_region: "Masovian Voivodeship",
 		identified_species: "Red fox",
 		confidence: 0.79,
 		safety_note: "Urban-adapted individual.",
@@ -71,6 +84,9 @@ const DEMO_REPORTS: AnimalReport[] = [
 		photo_url: "https://images.unsplash.com/photo-1590160061765-de8d44655b66?w=400",
 		latitude: 52.24,
 		longitude: 21.08,
+		location_continent: "Europe",
+		location_country: "Poland",
+		location_region: "Masovian Voivodeship",
 		identified_species: "European badger",
 		confidence: 0.72,
 		safety_note: "Nocturnal; rarely aggressive.",
@@ -140,6 +156,7 @@ export function getDemoDashboardData(filters: DemoFilters) {
 		species: speciesDisplayLabel(speciesNormalizeKey(r.identified_species)),
 		created_at: r.created_at,
 		photo_url: r.photo_url,
+		location_label: formatReportLocation(r),
 	}));
 
 	const total = reports.length;

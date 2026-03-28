@@ -31,6 +31,10 @@ export type AnimalReport = {
   photo_url: string;
   latitude: number;
   longitude: number;
+  /** Reverse-geocoded labels (null for legacy rows or geocoder failure). */
+  location_continent: string | null;
+  location_country: string | null;
+  location_region: string | null;
   identified_species: string;
   confidence: number | null;
   safety_note: string;

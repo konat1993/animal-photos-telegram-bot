@@ -3,6 +3,7 @@ import {
 	speciesDisplayLabel,
 	speciesNormalizeKey,
 } from "@/lib/species-color";
+import { formatReportLocation } from "@/lib/location-display";
 import { type AnimalReport, supabase } from "@/lib/supabase";
 
 export interface DashboardFilters {
@@ -22,6 +23,7 @@ export type DashboardData = {
 		species: string;
 		created_at: string;
 		photo_url: string;
+		location_label: string | null;
 	}[];
 	total: number;
 	topSpecies: string;
@@ -58,7 +60,14 @@ async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
 		);
 	}
 
-	const { data: reports, error: reportsError } = await query;
+	const { data: reportsRaw, error: reportsError } = await query;
+
+	const reports = (reportsRaw ?? []).map((r) => ({
+		...r,
+		location_continent: r.location_continent ?? null,
+		location_country: r.location_country ?? null,
+		location_region: r.location_region ?? null,
+	})) as AnimalReport[];
 
 	const { data: allReports, error: allError } = await supabase
 		.from("animal_reports")
@@ -102,6 +111,7 @@ async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
 		),
 		created_at: r.created_at,
 		photo_url: r.photo_url,
+		location_label: formatReportLocation(r),
 	}));
 
 	const total = reports?.length ?? 0;

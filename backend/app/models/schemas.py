@@ -69,6 +69,9 @@ class AnimalReportCreate(BaseModel):
     photo_url: str
     latitude: float
     longitude: float
+    location_continent: Optional[str] = None
+    location_country: Optional[str] = None
+    location_region: Optional[str] = None
     identified_species: str
     confidence: Optional[float] = None
     safety_note: str
