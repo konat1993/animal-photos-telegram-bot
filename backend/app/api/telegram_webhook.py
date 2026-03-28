@@ -33,11 +33,11 @@ WELCOME = (
 
 
 def _report_success_footer() -> str:
-    """Short link-out after a saved report (Polish copy for end users)."""
+    """Short link-out after a saved report (English copy for end users)."""
     return (
         "\n\n────────\n"
-        "🌐 Zgłoszenia od innych obserwatorów, mapa i zbiorcze statystyki "
-        "znajdziesz na stronie projektu:\n"
+        "🌐 You can find reports from other observers, a map, and collective statistics "
+        "on the project website:\n"
         f"{settings.public_dashboard_url}"
     )
 
@@ -107,7 +107,8 @@ async def _complete_report(
             longitude,
         )
     except Exception:
-        logger.exception("Report pipeline failed at step=%s user_id=%s", step, user_id)
+        logger.exception(
+            "Report pipeline failed at step=%s user_id=%s", step, user_id)
         raise
 
 
@@ -121,7 +122,8 @@ async def telegram_webhook(request: Request):
     try:
         update = TelegramUpdate.model_validate(body)
     except Exception as e:
-        logger.warning("Could not parse Telegram update: %s | body: %s", e, body)
+        logger.warning(
+            "Could not parse Telegram update: %s | body: %s", e, body)
         return {"ok": True}
 
     message = update.message
@@ -130,7 +132,8 @@ async def telegram_webhook(request: Request):
 
     raw_chat_id = message.chat.get("id")
     if not isinstance(raw_chat_id, (int, str)):
-        logger.warning("Telegram update missing valid chat id: %s", message.chat)
+        logger.warning(
+            "Telegram update missing valid chat id: %s", message.chat)
         return {"ok": True}
     chat_id: int | str = raw_chat_id
 
@@ -144,7 +147,8 @@ async def telegram_webhook(request: Request):
                 "file_id": best_photo.file_id,
                 "file_unique_id": best_photo.file_unique_id,
             }
-            logger.info("Stored pending photo for user %s: %s", user_id, best_photo.file_id)
+            logger.info("Stored pending photo for user %s: %s",
+                        user_id, best_photo.file_id)
 
             if message.caption and message.caption.strip():
                 coords = await resolve_location_text(message.caption)
@@ -195,7 +199,8 @@ async def telegram_webhook(request: Request):
             await telegram_client.send_message(chat_id, WELCOME)
 
     except Exception as e:
-        logger.exception("Error processing webhook update %s: %s", update.update_id, e)
+        logger.exception(
+            "Error processing webhook update %s: %s", update.update_id, e)
         try:
             await telegram_client.send_message(
                 chat_id,
