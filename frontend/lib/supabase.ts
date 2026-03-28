@@ -38,6 +38,8 @@ export type AnimalReport = {
   identified_species: string;
   confidence: number | null;
   safety_note: string;
+  /** One-sentence educational fact from Vision (null for legacy rows). */
+  species_fact: string | null;
   raw_ai_response: Record<string, unknown>;
   created_at: string;
 };

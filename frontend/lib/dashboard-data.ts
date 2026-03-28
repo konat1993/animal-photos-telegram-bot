@@ -21,6 +21,7 @@ export type DashboardData = {
     created_at: string;
     photo_url: string;
     location_label: string | null;
+    species_fact: string | null;
   }[];
   total: number;
   topSpecies: string;
@@ -61,6 +62,7 @@ async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
     location_continent: r.location_continent ?? null,
     location_country: r.location_country ?? null,
     location_region: r.location_region ?? null,
+    species_fact: r.species_fact ?? null,
   })) as AnimalReport[];
 
   const { data: allReports, error: allError } = await supabase
@@ -104,6 +106,7 @@ async function fetchData(filters: DashboardFilters): Promise<DashboardData> {
     created_at: r.created_at,
     photo_url: r.photo_url,
     location_label: formatReportLocation(r),
+    species_fact: r.species_fact?.trim() ? r.species_fact : null,
   }));
 
   const total = reports?.length ?? 0;

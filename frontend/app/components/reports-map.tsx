@@ -31,6 +31,7 @@ interface MapPoint {
   created_at: string;
   photo_url: string;
   location_label: string | null;
+  species_fact: string | null;
 }
 
 function FlyToFocusedReport({
@@ -215,6 +216,11 @@ export function ReportsMap({ points }: Props) {
                     {point.location_label ? (
                       <p className="mt-2 text-xs leading-snug text-muted-foreground">
                         {point.location_label}
+                      </p>
+                    ) : null}
+                    {point.species_fact ? (
+                      <p className="mt-2 border-border/60 border-l-2 pl-2 text-xs leading-snug text-muted-foreground">
+                        {point.species_fact}
                       </p>
                     ) : null}
                   </div>

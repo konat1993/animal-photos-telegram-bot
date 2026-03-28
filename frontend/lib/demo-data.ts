@@ -24,6 +24,8 @@ const DEMO_REPORTS: AnimalReport[] = [
     identified_species: "Red fox",
     confidence: 0.91,
     safety_note: "Keep distance; do not feed.",
+    species_fact:
+      "Foxes use their bushy tails for balance and as a warm cover when curled up to sleep.",
     raw_ai_response: {},
     created_at: "2025-03-20T14:30:00.000Z",
   },
@@ -41,6 +43,8 @@ const DEMO_REPORTS: AnimalReport[] = [
     identified_species: "Wild boar",
     confidence: 0.88,
     safety_note: "Avoid sudden movement near young.",
+    species_fact:
+      "Wild boar are strong swimmers and have been seen crossing wide rivers in search of food.",
     raw_ai_response: {},
     created_at: "2025-03-22T09:15:00.000Z",
   },
@@ -58,6 +62,8 @@ const DEMO_REPORTS: AnimalReport[] = [
     identified_species: "Roe deer",
     confidence: 0.85,
     safety_note: "Common in forest edges at dusk.",
+    species_fact:
+      "Roe deer bark like a dog when alarmed — a sharp sound that carries through woodland.",
     raw_ai_response: {},
     created_at: "2025-03-25T18:00:00.000Z",
   },
@@ -75,6 +81,8 @@ const DEMO_REPORTS: AnimalReport[] = [
     identified_species: "Red fox",
     confidence: 0.79,
     safety_note: "Urban-adapted individual.",
+    species_fact:
+      "Foxes hear low-frequency sounds well, which helps them locate rodents tunneling under snow or soil.",
     raw_ai_response: {},
     created_at: "2025-03-26T11:45:00.000Z",
   },
@@ -92,6 +100,8 @@ const DEMO_REPORTS: AnimalReport[] = [
     identified_species: "European badger",
     confidence: 0.72,
     safety_note: "Nocturnal; rarely aggressive.",
+    species_fact:
+      "Badgers live in extended family groups in large underground setts that can be used for generations.",
     raw_ai_response: {},
     created_at: "2025-03-26T20:10:00.000Z",
   },
@@ -159,6 +169,7 @@ export function getDemoDashboardData(filters: DemoFilters) {
     created_at: r.created_at,
     photo_url: r.photo_url,
     location_label: formatReportLocation(r),
+    species_fact: r.species_fact?.trim() ? r.species_fact : null,
   }));
 
   const total = reports.length;

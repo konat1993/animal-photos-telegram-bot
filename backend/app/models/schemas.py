@@ -61,6 +61,7 @@ class VisionResult(BaseModel):
     identified_species: str
     confidence: Optional[float] = None
     safety_note: str
+    species_fact: str = ""
 
 
 class AnimalReportCreate(BaseModel):
@@ -75,4 +76,5 @@ class AnimalReportCreate(BaseModel):
     identified_species: str
     confidence: Optional[float] = None
     safety_note: str
+    species_fact: Optional[str] = None
     raw_ai_response: dict

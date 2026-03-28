@@ -1,9 +1,9 @@
 import base64
 import json
 import logging
-from typing import Any
 
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionContentPartParam
 from ..core.config import settings
 from ..models.schemas import VisionResult
 
@@ -24,9 +24,13 @@ SYSTEM_PROMPT = (
     "(blur, no print visible). If scale is unclear or several species overlap in appearance, still "
     "give your best hypothesis with LOWER confidence (e.g. 0.35–0.55) and say uncertainty briefly "
     "in safety_note — do not default to Unknown just to be cautious.\n"
+    "Also include species_fact: exactly ONE short English sentence (max ~35 words) with an "
+    "educational fun fact about the identified species or type of field sign (tracks, scat, etc.) "
+    "in the given region when relevant. Do not repeat safety_note; no safety advice in species_fact.\n"
     "Respond ONLY with valid JSON, no markdown or extra text:\n"
     '{"identified_species": "<species name or Unknown>", "confidence": <0.0-1.0 or null>, '
-    '"safety_note": "<one sentence: practical caution + uncertainty if any>"}'
+    '"safety_note": "<one sentence: practical caution + uncertainty if any>", '
+    '"species_fact": "<one educational sentence>"}'
 )
 
 _client: AsyncOpenAI | None = None
@@ -61,7 +65,7 @@ async def analyze_image(
     b64 = base64.b64encode(image_bytes).decode("utf-8")
     client = get_client()
 
-    user_content: list[dict[str, Any]] = []
+    user_content: list[ChatCompletionContentPartParam] = []
     if location_context and location_context.strip():
         user_content.append({"type": "text", "text": location_context.strip()})
     user_content.append(
@@ -101,12 +105,20 @@ async def analyze_image(
         else:
             logger.error(
                 "Could not parse OpenAI response as JSON: %s", raw_text)
-            parsed = {"identified_species": "Unknown", "confidence": None,
-                      "safety_note": "Could not analyze image."}
+            parsed = {
+                "identified_species": "Unknown",
+                "confidence": None,
+                "safety_note": "Could not analyze image.",
+                "species_fact": "",
+            }
+
+    fact_raw = parsed.get("species_fact") or ""
+    species_fact = fact_raw.strip() if isinstance(fact_raw, str) else ""
 
     return VisionResult(
         identified_species=parsed.get("identified_species", "Unknown"),
         confidence=parsed.get("confidence"),
         safety_note=parsed.get(
             "safety_note", "No safety information available."),
+        species_fact=species_fact,
     )

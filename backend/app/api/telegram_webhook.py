@@ -84,6 +84,7 @@ async def _complete_report(
         )
 
         step = "supabase_insert"
+        fact_stripped = vision_result.species_fact.strip()
         report = AnimalReportCreate(
             telegram_user_id=user_id,
             photo_path=photo_path,
@@ -96,6 +97,7 @@ async def _complete_report(
             identified_species=vision_result.identified_species,
             confidence=vision_result.confidence,
             safety_note=vision_result.safety_note,
+            species_fact=fact_stripped or None,
             raw_ai_response=vision_result.model_dump(mode="json"),
         )
         await supabase_client.insert_report(report)
@@ -104,10 +106,13 @@ async def _complete_report(
         if vision_result.confidence is not None:
             confidence_str = f" (confidence: {vision_result.confidence:.0%})"
 
+        fact_line = ""
+        if fact_stripped:
+            fact_line = f"\n💡 {fact_stripped}"
         reply = (
             f"✅ Report saved!\n\n"
             f"🐾 Species: {vision_result.identified_species}{confidence_str}\n"
-            f"⚠️ {vision_result.safety_note}"
+            f"⚠️ {vision_result.safety_note}{fact_line}"
             f"{_report_success_footer()}"
         )
         step = "telegram_reply"

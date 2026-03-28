@@ -99,6 +99,7 @@ async def test_photo_then_location_completes_pipeline(mocker: MockerFixture) -> 
             identified_species="Red fox",
             confidence=0.9,
             safety_note="Observe from distance.",
+            species_fact="Red foxes often cache surplus prey near their dens.",
         ),
     )
 

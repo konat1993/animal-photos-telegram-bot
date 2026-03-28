@@ -82,9 +82,16 @@ export function ReportPhotoModal({ reports }: Props) {
                 />
                 {resolved.identified_species}
               </DialogTitle>
-              <DialogDescription>
-                {formatReportDateTime(resolved.created_at)} — no photo for this
-                report.
+              <DialogDescription className="space-y-2 text-left">
+                <span className="block">
+                  {formatReportDateTime(resolved.created_at)} — no photo for this
+                  report.
+                </span>
+                {resolved.species_fact?.trim() ? (
+                  <span className="border-border/60 block border-l-2 pl-2 text-sm leading-snug text-muted-foreground">
+                    {resolved.species_fact.trim()}
+                  </span>
+                ) : null}
               </DialogDescription>
             </DialogHeader>
           ) : (
@@ -113,6 +120,11 @@ export function ReportPhotoModal({ reports }: Props) {
                     {resolved.latitude.toFixed(5)},{" "}
                     {resolved.longitude.toFixed(5)}
                   </span>
+                  {resolved.species_fact?.trim() ? (
+                    <span className="border-border/60 mt-2 block border-l-2 pl-2 text-sm leading-snug text-muted-foreground">
+                      {resolved.species_fact.trim()}
+                    </span>
+                  ) : null}
                 </DialogDescription>
               </DialogHeader>
               <div className="relative w-full overflow-hidden rounded-lg bg-muted">
