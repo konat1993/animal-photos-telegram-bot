@@ -56,7 +56,8 @@ flowchart TB
 | [`supabase/migrations/`](supabase/migrations/) | SQL migrations (schema, RLS, optional features) |
 | [`deploy/`](deploy/) | Caddy config for production TLS reverse proxy |
 | [`docker-compose.yml`](docker-compose.yml) | Caddy + frontend + backend ([`.env.docker.example`](.env.docker.example)) |
-| [`docs/deploy-droplet.md`](docs/deploy-droplet.md) | Production deployment on a VPS |
+| [`docs/deploy-droplet.md`](docs/deploy-droplet.md) | Production updates on an existing VPS |
+| [`docs/deploy-droplet-from-scratch.md`](docs/deploy-droplet-from-scratch.md) | New droplet from zero (DNS, Docker, clone, webhook) |
 
 ### Monorepo file tree
 
@@ -106,6 +107,8 @@ High-level layout (generated from the repo; omitting `node_modules`, `.next`, `.
 │   └── Caddyfile
 └── docs/
     ├── deploy-droplet.md
+    ├── deploy-droplet-from-scratch.md  # Nowy droplet od zera
+    ├── telegram-webhook.md        # Webhook: ustawienie i diagnostyka bota
     └── …                          # Design notes, SSH, etc.
 ```
 
@@ -260,7 +263,9 @@ npm run test:e2e
 ## Production deployment
 
 - **Docker Compose:** build-time args for Next public env vars; runtime env for the backend — see [`.env.docker.example`](.env.docker.example) and [`docker-compose.yml`](docker-compose.yml).
-- **Step-by-step VPS:** [docs/deploy-droplet.md](docs/deploy-droplet.md).
+- **Nowy droplet od zera:** [docs/deploy-droplet-from-scratch.md](docs/deploy-droplet-from-scratch.md).
+- **Aktualizacje na istniejącym VPS:** [docs/deploy-droplet.md](docs/deploy-droplet.md).
+- **Telegram webhook (ustawienie i diagnostyka bota):** [docs/telegram-webhook.md](docs/telegram-webhook.md).
 
 ---
 
