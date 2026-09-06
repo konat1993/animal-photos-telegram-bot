@@ -21,12 +21,22 @@ services:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+    # Alpine/Node on a droplet without IPv6: default Docker DNS often fails
+    # (TypeError: fetch failed / wget: bad address for *.supabase.co).
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      NODE_OPTIONS: --dns-result-order=ipv4first
     restart: unless-stopped
 
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       SUPABASE_URL: ${SUPABASE_URL}
